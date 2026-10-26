@@ -165,8 +165,11 @@ async function parseErrorResponse(response: Response): Promise<ApiError> {
   return new ApiError(message, response.status, detail);
 }
 
-async function request<T>(path: string, init?: RequestInit & { signal?: AbortSignal }): Promise<T> {
-  const maxRetries = 2;
+export async function request<T>(
+  path: string,
+  init?: RequestInit & { signal?: AbortSignal },
+  maxRetries = 2,
+): Promise<T> {
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {

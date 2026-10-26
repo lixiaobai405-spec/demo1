@@ -20,7 +20,8 @@ def load_env_file(env_file: Path) -> None:
         key, value = line.split("=", 1)
         cleaned_key = key.strip()
         cleaned_value = value.strip().strip('"').strip("'")
-        os.environ[cleaned_key] = cleaned_value
+        # Explicit process settings own runtime isolation; .env supplies defaults.
+        os.environ.setdefault(cleaned_key, cleaned_value)
 
 
 def _load_mykey() -> dict:
@@ -50,7 +51,7 @@ _mykey = _load_mykey()
 
 
 def _resolve(key: str, env_key: str, default) -> str:
-    """.env takes precedence over mykey.py, mykey.py over default."""
+    """Process environment > .env > mykey.py > default."""
     env_val = os.getenv(env_key)
     if env_val is not None and env_val != "":
         return env_val.strip()
@@ -89,7 +90,7 @@ class Settings:
         "DATABASE_URL",
         f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}",
     )
-    # .env takes precedence over mykey.py, mykey.py over default
+    # Process environment > .env > mykey.py > default
     llm_mode: str = _resolve("llm_mode", "LLM_MODE", "mock").strip().lower()
     openai_api_key: str = _resolve("openai_api_key", "OPENAI_API_KEY", "").strip()
     openai_base_url: str = _resolve("openai_base_url", "OPENAI_BASE_URL", "https://api.openai.com/v1").strip()

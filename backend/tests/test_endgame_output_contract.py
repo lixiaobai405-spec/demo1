@@ -152,6 +152,7 @@ def test_build_endgame_result_from_record_rehydrates_three_stage_strategy() -> N
     """确认持久化后的终局结果可以正确还原三阶段推进策略结构。"""
     record = SimpleNamespace(
         generation_mode="rule_based",
+        industry_essence=None,
         private_domain_json=json.dumps(
             {
                 "current_state": "私域基础薄弱",

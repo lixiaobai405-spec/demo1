@@ -20,6 +20,21 @@ export const initialForm: AssessmentCreateRequest = {
   current_challenges: "", ai_goals: "", available_data: "", notes: "",
 };
 
+export function createInitialAssessmentForm({
+  companyName,
+  prefillSessionId,
+  assessmentId,
+}: {
+  companyName?: string;
+  prefillSessionId?: string;
+  assessmentId?: string;
+}): AssessmentCreateRequest {
+  return {
+    ...initialForm,
+    company_name: assessmentId || prefillSessionId ? "" : (companyName?.trim() ?? ""),
+  };
+}
+
 export const initialProgress: AssessmentProgress = {
   has_profile: false, has_canvas: false, has_breakthrough: false,
   has_directions: false, has_competitiveness: false, has_endgame: false, has_scenarios: false,

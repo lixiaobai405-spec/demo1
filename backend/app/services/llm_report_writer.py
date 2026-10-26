@@ -282,6 +282,7 @@ class LLMReportWriter:
         case_recommendation: CaseRecommendationResult | None,
         breakthrough_keys: list[str] | None = None,
         direction_labels: list[str] | None = None,
+        selected_directions: list[DirectionSuggestion] | None = None,
         competitiveness_result = None,
         enrichment_result = None,
         endgame_result = None,

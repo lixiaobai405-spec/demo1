@@ -50,6 +50,7 @@ def init_db() -> None:
     from app.models.scenario_recommendation import ScenarioRecommendation  # noqa: F401
     from app.models.score_record import ScoreRecord  # noqa: F401
     from app.models.user import User  # noqa: F401
+    from app.models.lite import LiteAssessment, LitePublicCache  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
     _migrate_bmc_scorings_table()

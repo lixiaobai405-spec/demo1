@@ -1,0 +1,61 @@
+/* The shared product palette is scoped to the new entry and lite pages. */
+.theme {
+  --primary: 225.56 57.58% 54.71%;
+  --primary-foreground: 0 0% 100%;
+  --foreground: 218.1 52.07% 23.73%;
+  --muted-foreground: 217 18% 46%;
+  --card: 0 0% 100%;
+  --border: 216 41% 93%;
+  --input: 216 41% 93%;
+  --ring: 225.56 57.58% 54.71%;
+  --radius: 12px;
+  --font-heading: Inter, "Microsoft YaHei", "PingFang SC", sans-serif;
+  --font-body: Inter, "Microsoft YaHei", "PingFang SC", sans-serif;
+  --shadow-card: 0 2px 16px rgb(29 52 92 / 5%);
+  color-scheme: light;
+  background: #f6f8fc;
+  color: #1d345c;
+  font-family: var(--font-body);
+}
+
+.theme :global(.font-heading) { font-family: var(--font-heading); }
+.theme :global(.text-warm-text) { color: #1d345c; }
+.theme :global(.text-warm-secondary) { color: #536783; }
+.theme :global(.text-warm-muted) { color: #61718b; }
+.theme :global(.text-warm-accent) { color: #4969ce; }
+.theme :global(.bg-warm-inset) { background-color: #eef2fb; }
+.theme :global(.border-warm-border) { border-color: #e5ebf4; }
+.theme :global(.border-warm-accent) { border-color: #4969ce; }
+
+.theme :global(.rounded-2xl),
+.theme :global(.rounded-xl),
+.theme :global(.btn-primary),
+.theme :global(.btn-secondary) {
+  border-radius: 12px;
+}
+
+.theme :global(.btn-primary) {
+  background: #4969ce;
+  color: white;
+  box-shadow: 0 2px 8px rgb(73 105 206 / 16%);
+}
+.theme :global(.btn-primary:hover) { background: #3656ba; }
+.theme :global(.btn-secondary:hover) {
+  background: #eef2fb;
+  color: #4969ce;
+  border-color: #b8c7ed;
+}
+.theme :global(.badge-accent) {
+  color: #4969ce;
+  background: #eef2fb;
+  border-color: #e5ebf4;
+}
+.theme :global(.input-field) {
+  color: #1d345c;
+  background: white;
+  border-color: #e5ebf4;
+}
+.theme :global(.input-field:focus) {
+  border-color: #4969ce;
+  box-shadow: 0 0 0 3px rgb(73 105 206 / 12%);
+}

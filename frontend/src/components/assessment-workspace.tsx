@@ -26,6 +26,7 @@ import {
   applyAssessmentDetailToStore,
   computeProgress,
   countPrefillFields,
+  createInitialAssessmentForm,
   initialForm,
   initialProgress,
   mapAssessmentToForm,
@@ -94,15 +95,19 @@ type ResultCardItem = {
 export function AssessmentWorkspace({
   assessmentId,
   prefillSessionId,
+  companyName,
 }: {
   assessmentId?: string;
   prefillSessionId?: string;
+  companyName?: string;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const store = useAssessmentStore();
 
-  const [form, setForm] = useState<AssessmentCreateRequest>(initialForm);
+  const [form, setForm] = useState<AssessmentCreateRequest>(() =>
+    createInitialAssessmentForm({ assessmentId, prefillSessionId, companyName }),
+  );
   const [prefillSummary, setPrefillSummary] = useState<{
     importSessionId: string;
     mappedCount: number;

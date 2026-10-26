@@ -101,7 +101,7 @@ function HeroSection() {
         <p style={{ fontSize: "1.05rem", fontWeight: 300, color: C.inkLight, maxWidth: 560, lineHeight: 2, marginBottom: "3rem" }}>
           融合咨询级方法论与前沿AI技术，协助中高层管理者在 AI 时代完成从诊断到落地的系统性商业模式创新——从单点提效到生态壁垒，一步步构建不可复制的竞争优势。
         </p>
-        <Link href="/assessment" style={{
+        <Link href="/start" style={{
           display: "inline-flex", alignItems: "center", gap: "0.75rem",
           background: C.ink, color: C.paper, fontFamily: sans,
           fontSize: "0.9rem", fontWeight: 500, letterSpacing: "0.05em",
@@ -392,7 +392,7 @@ function CTASection() {
       <p style={{ fontSize: "0.95rem", color: "rgba(247,244,238,0.55)", maxWidth: 480, margin: "0 auto 3rem", lineHeight: 2 }}>
         输入您企业的真实现状，让智能体为您生成专属的商业画布诊断与 AI 创新落地规划。
       </p>
-      <Link href="/assessment" style={{
+      <Link href="/start" style={{
         display: "inline-flex", alignItems: "center", gap: "0.75rem",
         background: C.gold, color: C.ink, fontFamily: sans,
         fontSize: "0.9rem", fontWeight: 700, letterSpacing: "0.06em",

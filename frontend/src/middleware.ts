@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedPaths = ["/history", "/assessment", "/reports", "/report", "/intake", "/report-context"];
+const protectedPaths = ["/history", "/assessment", "/reports", "/report", "/intake", "/report-context", "/lite"];
 const authPaths = ["/login", "/register"];
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("auth_token")?.value;
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
 
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
   const isAuthPage = authPaths.some((p) => pathname.startsWith(p));
 
   if (isProtected && !token) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
+    loginUrl.searchParams.set("redirect", pathname + search);
     return NextResponse.redirect(loginUrl);
   }
 

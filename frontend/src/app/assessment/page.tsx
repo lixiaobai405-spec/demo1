@@ -15,6 +15,7 @@ function AssessmentPageContent() {
   const searchParams = useSearchParams();
   const prefillSessionId =
     searchParams.get("import_session_id")?.trim() || undefined;
+  const companyName = searchParams.get("company_name")?.trim() || undefined;
 
   useEffect(() => {
     if (!isInstructor && tab !== "student") {
@@ -87,7 +88,11 @@ function AssessmentPageContent() {
         </section>
 
         {activeTab === "student" ? (
-          <AssessmentWorkspace prefillSessionId={prefillSessionId} />
+          <AssessmentWorkspace
+            key={`${prefillSessionId ?? ""}:${companyName ?? ""}`}
+            prefillSessionId={prefillSessionId}
+            companyName={companyName}
+          />
         ) : (
           <InstructorDashboard />
         )}

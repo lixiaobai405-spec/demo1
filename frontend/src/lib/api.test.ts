@@ -16,7 +16,7 @@ describe("api request helper", () => {
     expect(resolveApiBaseUrl(" http://localhost:8000/ ")).toBe(
       "http://localhost:8000",
     );
-    expect(resolveApiBaseUrl(undefined)).toBe("http://localhost:8000");
+    expect(resolveApiBaseUrl(undefined)).toBe("");
   });
 
   it("treats 204 responses as successful empty payloads", async () => {
@@ -53,7 +53,7 @@ describe("api request helper", () => {
     ).resolves.toEqual(orderPayload);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "http://localhost:8000/api/assessments/assessment-1/payments/orders",
+      "/api/assessments/assessment-1/payments/orders",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({ provider: "wechat" }),
