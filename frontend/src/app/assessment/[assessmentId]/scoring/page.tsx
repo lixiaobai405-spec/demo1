@@ -12,6 +12,7 @@ import { isPaymentRequired } from "@/lib/payment-entitlement";
 import { BmcScoringMatrix } from "@/components/bmc-scoring-matrix";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SyncFeedbackPanel } from "@/components/sync-feedback-panel";
 
@@ -163,6 +164,7 @@ export default function ScoringPage({
                 ? "生成中..."
                 : "生成创新方向候选"}
             </Button>
+            {expandDirections.isPending ? <GenerationWaitHint label="正在生成创新方向候选" /> : null}
           </div>
         </section>
       </div>

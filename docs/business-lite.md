@@ -1,5 +1,15 @@
 # Business innovation lite
 
+## Adversarial follow-up — 2026-10-27
+
+The four reproduced extraction failures are corrected at the existing evidence/profile boundary: explicit mother-company/competitor subjects do not supply target facts; undisclosed clauses do not establish known business/scale; event dates are read from the event clause rather than a later archival clause. New results identify this extraction revision as `lite-1.1-extractive`. Normal subject-omitted uploads and business objects such as competitor-analysis software remain usable. Public-cache hits revalidate cached sources and rebuild the profile, so no cache migration is needed; historical assessment snapshots remain frozen.
+
+Backend verification on the corrected source: 250 passed, 2 existing skips, with an isolated database and a fresh `--basetemp` under `E:/codex-acceptance/optimization-20261027/`. The earlier run's 38 setup errors were permissions on the shared Windows temporary directory; all passed using the task-owned directory. The frozen 15-case adversarial replay now has13 PASS and2 PARTIAL (syndication independence and the old schema-only full-metadata probe). All four failing extraction cases now pass; the original audit artifacts are retained.
+
+Full result pages project saved generation mode and module timestamps, preferring `updated_at` on regeneration. The profile uses its dedicated `profile_generated_at`; direction timestamps are projected from the existing database row into POST/GET/detail responses without a database migration. Naive ISO datetimes from the UTC database convention are interpreted as UTC; explicit offsets are retained. “报告格式版本：完整版 v1” identifies the product format, not a historical model/build version. Unknown generation mode is shown as unmarked rather than real.
+
+Final frontend: 29 files / 80 tests, typecheck and production build passed. Ten existing full generation entry points share a presentation-only ETA; save/download/confirmation and immediate rule scoring are excluded. The build has a durable exit-zero/quiescent receipt at `E:/codex-acceptance/optimization-20261027/root/frontend-build-receipt.json`. Actual Chrome in Asia/Shanghai passed profile and canvas pending ETA, mock/time/format-version display, UTC instant/local-time equality, the existing new-tab canvas flow, and320/390 viewport widths with no horizontal overflow or page errors. The isolated server independently reported its QA database and mock/RAG/report settings. Independent final review found no remaining blocking finding within this change. Harness URL/new-tab/strict-selector corrections are not product defects. Final requirement evidence remains in the task's updated audit.
+
 ## Run locally
 
 Use the existing Python `rag-env` environment and frontend dependencies. Start from the repository root. Explicit process variables take precedence over `.env`, then `mykey.py`, then defaults. Do not point acceptance runs at the normal business database.

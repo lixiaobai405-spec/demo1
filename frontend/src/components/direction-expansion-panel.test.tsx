@@ -43,6 +43,7 @@ describe("DirectionExpansionPanel", () => {
     );
 
     expect(screen.getByText("AI 正在生成方向候选")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("预计 1–2 分钟");
     expect(screen.queryByText("AI 驱动动态定价")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /确认选择/ }),
@@ -104,6 +105,7 @@ describe("DirectionExpansionPanel", () => {
     );
 
     expect(screen.getByText("AI 正在生成推荐场景")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("预计 1–2 分钟");
     expect(screen.getByText("请稍候，系统正在同步场景结果。")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "生成 AI 推荐场景" }),

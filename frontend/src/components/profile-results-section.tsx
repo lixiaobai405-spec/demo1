@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { GenerationMetadata } from "@/components/generation-metadata";
 import type { CompanyProfileResult } from "@/lib/types";
 
 /**
@@ -11,9 +11,11 @@ import type { CompanyProfileResult } from "@/lib/types";
 export function ProfileResultsSection({
   companyProfile,
   profileMode,
+  generatedAt,
 }: {
   companyProfile: CompanyProfileResult;
-  profileMode: "mock" | "live" | null;
+  profileMode: string | null;
+  generatedAt?: string | null;
 }) {
   return (
     <div className="card">
@@ -22,11 +24,7 @@ export function ProfileResultsSection({
           <p className="section-label">画像结果</p>
           <h2 className="section-heading">企业画像结果</h2>
         </div>
-        {companyProfile ? (
-          <Badge variant={profileMode === "live" ? "success" : "accent"}>
-            {profileMode === "mock" ? "模拟" : "真实"}
-          </Badge>
-        ) : null}
+        <GenerationMetadata generationMode={profileMode} generatedAt={generatedAt} />
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">

@@ -7,6 +7,7 @@ import { useAssessmentDetail, useGenerateCanvas } from "@/hooks";
 import { toast } from "@/hooks/use-toast";
 import { formatMutationError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileResultsSection } from "@/components/profile-results-section";
@@ -118,7 +119,8 @@ export default function ProfilePage({
         {companyProfile ? (
           <ProfileResultsSection
             companyProfile={companyProfile}
-            profileMode={null}
+            profileMode={detail.assessment.profile_generation_mode}
+            generatedAt={detail.assessment.profile_generated_at}
           />
         ) : (
           <div className="card-inset">
@@ -162,6 +164,7 @@ export default function ProfilePage({
                 {generateCanvas.isPending ? "生成中..." : "生成商业画布"}
               </Button>
             )}
+            {generateCanvas.isPending ? <GenerationWaitHint label="正在生成商业画布" /> : null}
           </div>
         </section>
       </div>

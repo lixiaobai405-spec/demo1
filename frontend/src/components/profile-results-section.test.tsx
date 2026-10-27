@@ -30,4 +30,40 @@ describe("ProfileResultsSection", () => {
     expect(screen.getByText("挑战 1")).toBeInTheDocument();
     expect(screen.getByText("方向 1")).toBeInTheDocument();
   });
+
+  it("shows the saved generation time and full report format version", () => {
+    render(
+      <ProfileResultsSection
+        profileMode="mock"
+        generatedAt="2026-10-26T08:00:00Z"
+        companyProfile={{
+          company_name: "测试企业", company_summary: "企业概览", value_proposition: "价值主张",
+          customer_and_market: "客户市场", operations_and_resources: "运营资源",
+          digital_and_ai_readiness: "AI 准备度", key_challenges: [], priority_ai_directions: [],
+          missing_information: [],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("模拟生成")).toBeInTheDocument();
+    expect(screen.getByText("报告格式版本：完整版 v1")).toBeInTheDocument();
+    expect(document.querySelector("time")).toHaveAttribute("dateTime", "2026-10-26T08:00:00Z");
+  });
+
+  it("does not label an unknown generation mode as real", () => {
+    render(
+      <ProfileResultsSection
+        profileMode={null}
+        companyProfile={{
+          company_name: "测试企业", company_summary: "企业概览", value_proposition: "价值主张",
+          customer_and_market: "客户市场", operations_and_resources: "运营资源",
+          digital_and_ai_readiness: "AI 准备度", key_challenges: [], priority_ai_directions: [],
+          missing_information: [],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("未标注")).toBeInTheDocument();
+    expect(screen.queryByText("真实")).not.toBeInTheDocument();
+  });
 });

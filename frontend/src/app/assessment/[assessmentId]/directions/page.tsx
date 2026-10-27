@@ -12,10 +12,12 @@ import {
 import { applyAssessmentDetailToStore } from "@/lib/assessment-utils";
 import { expandDirections, formatMutationError, getDirections } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DirectionExpansionPanel } from "@/components/direction-expansion-panel";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 import { SyncFeedbackPanel } from "@/components/sync-feedback-panel";
+import { GenerationMetadata } from "@/components/generation-metadata";
 import { useAssessmentStore } from "@/stores/assessment-store";
 import { toast } from "@/hooks/use-toast";
 import { isPaymentRequired } from "@/lib/payment-entitlement";
@@ -202,6 +204,8 @@ export default function DirectionsPage({
           </div>
         </section>
 
+        {isGenerating ? <GenerationWaitHint label="正在生成创新方向候选" /> : null}
+
         {paymentRequired ? (
           <PaymentUnlockPanel
             assessmentId={assessmentId}
@@ -222,6 +226,11 @@ export default function DirectionsPage({
             </Link>
           </div>
         ) : directionData ? (
+          <>
+          <GenerationMetadata
+            generationMode={directionData.direction_expansion.generation_mode}
+            generatedAt={directionData.direction_expansion.updated_at ?? directionData.direction_expansion.created_at}
+          />
           <DirectionExpansionPanel
             data={directionData}
             selectedIds={currentSelectedDirectionIds}
@@ -257,6 +266,7 @@ export default function DirectionsPage({
             }}
             onNextStep={handleGenerateScenarios}
           />
+          </>
         ) : directionsQuery.isLoading ? (
           <div className="mx-auto max-w-7xl">
             <Skeleton className="h-96 w-full rounded-xl" />

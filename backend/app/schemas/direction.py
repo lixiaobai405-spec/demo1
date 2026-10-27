@@ -25,6 +25,8 @@ class DirectionExpansionResult(BaseModel):
     llm_status: Literal["pending", "completed", "failed"] = "completed"
     elements: list[DirectionExpansionByElement] = Field(default_factory=list)
     total_suggestions: int
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
 
 
 class DirectionSelectionRequest(BaseModel):

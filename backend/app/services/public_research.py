@@ -148,6 +148,12 @@ def _entity_pattern(company: str):
     return re.compile(r"(?<![\w\u4e00-\u9fff])" + re.escape(normalized_name(company))
                       + r"(?![\w\u4e00-\u9fff]{0,30}分公司)")
 
+def has_other_subject(sentence: str, company: str) -> bool:
+    without_target = _entity_pattern(company).sub("", normalized_name(sentence))
+    return bool(re.search(
+        r"子公司|旗下|关联公司|(?:[\u4e00-\u9fffA-Za-z]{2,})(?:有限公司|有限责任公司|股份公司)"
+        r"|(?:^|[，,；;：:])(?:的|其)?(?:母公司|竞争对手)", without_target))
+
 def evidence_excerpt(page: str, company: str) -> str:
     """Keep factual prose, not navigation or a company name appearing only in copyright."""
     candidates, identities = [], []
@@ -164,9 +170,7 @@ def evidence_excerpt(page: str, company: str) -> str:
             continue
         exact = bool(target.search(normalized_name(sentence)))
         # Do not attach other legal entities/subsidiaries to a company's name elsewhere on a page.
-        without_target = target.sub("", normalized_name(sentence))
-        other_entity = bool(re.search(r"子公司|旗下|关联公司|(?:[\u4e00-\u9fffA-Za-z]{2,})(?:有限公司|有限责任公司|股份公司)", without_target))
-        if other_entity:
+        if has_other_subject(sentence, company):
             identity_seen = False
             continue
         if exact:

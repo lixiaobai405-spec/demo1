@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 import { useAssessmentDetail } from "@/hooks";
 import { useGenerateCompetitiveness } from "@/hooks/use-competitiveness";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 import { ScenarioQuadrantView } from "@/components/scenario-quadrant-view";
 import { SyncFeedbackPanel } from "@/components/sync-feedback-panel";
+import { GenerationMetadata } from "@/components/generation-metadata";
 import { toast } from "@/hooks/use-toast";
 import { formatMutationError } from "@/lib/api";
 import { isPaymentRequired } from "@/lib/payment-entitlement";
@@ -117,6 +119,10 @@ export function ScenariosPageContent({
           />
         ) : scenarios ? (
           <>
+            <GenerationMetadata
+              generationMode={scenarios.scoring_method}
+              generatedAt={scenarios.updated_at ?? scenarios.created_at}
+            />
             <ScenarioQuadrantView
               scenarioRecommendation={scenarios}
               assessmentId={assessmentId}
@@ -139,6 +145,7 @@ export function ScenariosPageContent({
                       ? "生成中..."
                       : "生成差异化竞争力"}
                   </Button>
+                  {generateCompetitiveness.isPending ? <GenerationWaitHint label="正在生成差异化竞争力" /> : null}
                 </div>
               </section>
             ) : null}

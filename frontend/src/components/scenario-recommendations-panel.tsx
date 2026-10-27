@@ -11,6 +11,7 @@ import { useGenerateCompetitiveness } from "@/hooks/use-competitiveness";
 import { toast } from "@/hooks/use-toast";
 import { formatMutationError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 
 const RANK_LABELS = ["No.1", "No.2", "No.3"];
 
@@ -104,6 +105,7 @@ export function ScenarioRecommendationsPanel({
               ? "生成中..."
               : "生成差异化竞争力"}
           </Button>
+          {generateCompetitiveness.isPending ? <GenerationWaitHint label="正在生成差异化竞争力" /> : null}
         </div>
       ) : null}
 

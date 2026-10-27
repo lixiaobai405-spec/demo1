@@ -689,6 +689,8 @@ def expand_directions(
 
     # Set llm_status on the response expansion
     expansion.llm_status = record.llm_status
+    expansion.created_at = record.created_at
+    expansion.updated_at = record.updated_at
 
     return AssessmentDirectionResponse(
         assessment_id=assessment_id,
@@ -763,6 +765,8 @@ def get_directions(
     )
     expansion.generation_mode = record.generation_mode  # type: ignore[assignment]
     expansion.llm_status = record.llm_status  # type: ignore[assignment]
+    expansion.created_at = record.created_at
+    expansion.updated_at = record.updated_at
 
     selection_response = _load_direction_selection(db, assessment_id)
 
@@ -2509,9 +2513,12 @@ def _load_direction_expansion_result(
         return None
     try:
         raw = json.loads(record.expansion_json)
-        return _normalize_direction_expansion(
+        expansion = _normalize_direction_expansion(
             DirectionExpansionResult.model_validate(raw)
         )
+        expansion.created_at = record.created_at
+        expansion.updated_at = record.updated_at
+        return expansion
     except Exception:
         return None
 

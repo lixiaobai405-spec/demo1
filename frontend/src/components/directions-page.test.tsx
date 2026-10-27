@@ -171,6 +171,8 @@ describe("DirectionsPage", () => {
       direction_expansion: {
         generation_mode: "llm",
         llm_status: "completed",
+        created_at: "2026-10-26T08:00:00Z",
+        updated_at: "2026-10-27T08:00:00Z",
         total_suggestions: 1,
         elements: [
           {
@@ -210,6 +212,13 @@ describe("DirectionsPage", () => {
         },
       ],
     });
+  });
+
+  it("shows the saved direction generation time and report format version", async () => {
+    renderPage();
+
+    expect(await screen.findByText("报告格式版本：完整版 v1")).toBeInTheDocument();
+    expect(document.querySelector("time")).toHaveAttribute("dateTime", "2026-10-27T08:00:00Z");
   });
 
   it("confirms directions from the page flow even before the workspace store is hydrated", async () => {

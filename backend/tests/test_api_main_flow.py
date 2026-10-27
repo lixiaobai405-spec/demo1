@@ -539,10 +539,20 @@ def test_expand_directions_clears_existing_selection_and_downstream_outputs(
     assert response.status_code == 200
     body = response.json()
     assert body["direction_selection"] is None
+    expansion = body["direction_expansion"]
+    assert expansion["created_at"]
+    assert expansion["updated_at"]
+
+    saved_expansion = client.get(
+        f"/api/assessments/{assessment_id}/directions"
+    ).json()["direction_expansion"]
+    assert saved_expansion["created_at"] == expansion["created_at"]
+    assert saved_expansion["updated_at"] == expansion["updated_at"]
 
     detail_response = client.get(f"/api/assessments/{assessment_id}")
     assert detail_response.status_code == 200
     detail = detail_response.json()
+    assert detail["direction_expansion"]["updated_at"] == expansion["updated_at"]
     assert detail["direction_selection"] is None
     assert detail["scenario_recommendation"] is None
     assert detail["competitiveness"] is None

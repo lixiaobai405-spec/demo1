@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 
 import type {
   AssessmentDirectionResponse,
@@ -73,6 +74,7 @@ export function DirectionExpansionPanel({
           <p className="mt-3 text-sm leading-7 text-warm-secondary">
             方向生成完成后，页面会自动刷新并展示当前可选候选池。
           </p>
+          <GenerationWaitHint label="正在生成创新方向候选" />
         </div>
       </div>
     );
@@ -116,6 +118,7 @@ export function DirectionExpansionPanel({
                     <p className="mt-2 text-sm leading-7 text-warm-secondary">
                       正在基于当前已确认方向生成候选场景池和 Top 3 AI 推荐场景，完成后页面会自动跳转。
                     </p>
+                    <GenerationWaitHint label="正在生成推荐场景" />
                   </div>
                   <span className="badge badge-success animate-pulse text-xs">
                     生成中

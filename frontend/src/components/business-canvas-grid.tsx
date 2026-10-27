@@ -1,6 +1,7 @@
 import React from "react";
 
 import type { CanvasDiagnosisResult } from "@/lib/types";
+import { GenerationMetadata } from "@/components/generation-metadata";
 
 const CANVAS_TITLE_BY_KEY: Record<string, string> = {
   key_partnerships: "关键伙伴",
@@ -38,9 +39,10 @@ export function BusinessCanvasGrid({
           <p className="section-label">画布诊断</p>
           <h2 className="section-heading">商业画布 9 格诊断</h2>
         </div>
-        <span className="badge badge-success">
-          {canvasDiagnosis.generation_mode === "mock" ? "模拟生成" : "真实生成"}
-        </span>
+        <GenerationMetadata
+          generationMode={canvasDiagnosis.generation_mode}
+          generatedAt={canvasDiagnosis.updated_at ?? canvasDiagnosis.created_at}
+        />
       </div>
 
       <div className="mt-6 space-y-4">

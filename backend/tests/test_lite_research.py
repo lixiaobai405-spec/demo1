@@ -419,3 +419,137 @@ def test_business_keywords_inside_legal_name_are_not_business_facts(env, monkeyp
         assert len(result.sources) == 2
         assert result.profile.main_business == svc.UNKNOWN
         assert result.status == "insufficient"
+
+def test_parent_company_facts_cannot_supply_target_profile(env, monkeypatch):
+    svc, _, engine, _ = env
+    name = "明川咨询有限公司"
+    monkeypatch.setattr(svc, "research_company", lambda _: [
+        source("https://example.com/a", name + "的母公司主营高端制造设备，拥有员工8000人，总部位于深圳。"),
+        source("https://example.org/b", name + "成立于2018年，拥有多项企业奖项。"),
+    ])
+    with Session(engine) as db:
+        result = svc.research(db, "u1", name)
+        assert result.status == "insufficient"
+        assert result.profile.main_business == svc.UNKNOWN
+        assert result.profile.scale == svc.UNKNOWN
+        assert result.profile.region == svc.UNKNOWN
+
+
+def test_undisclosed_business_is_missing_evidence(env, monkeypatch):
+    svc, _, engine, _ = env
+    name = "禾岸实业有限公司"
+    monkeypatch.setattr(svc, "research_company", lambda _: [
+        source("https://example.com/a", name + "主营业务尚未披露，业务方向有待调查。"),
+        source("https://example.org/b", name + "成立于2017年，拥有完整的企业登记档案。"),
+    ])
+    with Session(engine) as db:
+        result = svc.research(db, "u1", name)
+        assert len(result.sources) == 2
+        assert result.profile.main_business == svc.UNKNOWN
+        assert "主营业务" in result.profile.missing_information
+        assert result.status == "insufficient"
+
+
+def test_competitor_upload_cannot_supply_target_business(env, monkeypatch):
+    svc, _, engine, _ = env
+    name = "杉岳咨询有限公司"
+    monkeypatch.setattr(svc, "research_company", lambda _: [
+        source("https://example.com/a", name + "成立于2014年，拥有规范的企业登记档案。"),
+        source("https://example.org/b", name + "总部位于南京，拥有完整的企业联系档案。"),
+    ])
+    upload = "竞争对手主营汽车零部件制造，员工超过三千人，总部位于合肥。"
+    with Session(engine) as db:
+        result = svc.research(db, "u1", name, upload)
+        assert result.status == "insufficient"
+        assert result.profile.main_business == svc.UNKNOWN
+        assert result.profile.scale == svc.UNKNOWN
+        assert "合肥" not in result.profile.region
+
+
+def test_rearchival_year_does_not_make_old_launch_recent(env, monkeypatch):
+    svc, _, engine, _ = env
+    monkeypatch.setattr(svc, "now", lambda: datetime(2026, 10, 27, tzinfo=timezone.utc))
+    name = "远洲工业有限公司"
+    monkeypatch.setattr(svc, "research_company", lambda _: [
+        source("https://example.com/a", name + "主营机械生产，2010年发布第一代设备，该历史资料于2026年重新归档。"),
+        source("https://example.org/b", name + "总部位于武汉，拥有员工350人，成立于1999年。"),
+    ])
+    with Session(engine) as db:
+        result = svc.research(db, "u1", name)
+        assert result.status == "profile_ready"
+        assert result.profile.recent_developments == svc.UNKNOWN
+
+
+@pytest.mark.parametrize("upload", [
+    "主营汽车零部件制造，员工超过三千人，总部位于合肥。",
+    "本公司主营汽车零部件制造，员工超过三千人，总部位于合肥。",
+    "杉岳咨询有限公司主营汽车零部件制造，员工超过三千人，总部位于合肥。",
+])
+def test_target_upload_still_supplies_missing_business(env, monkeypatch, upload):
+    svc, _, engine, _ = env
+    name = "杉岳咨询有限公司"
+    monkeypatch.setattr(svc, "research_company", lambda _: [
+        source("https://example.com/a", name + "成立于2014年，拥有规范的企业登记档案。"),
+        source("https://example.org/b", name + "总部位于南京，拥有完整的企业联系档案。"),
+    ])
+    with Session(engine) as db:
+        result = svc.research(db, "u1", name, upload)
+        assert result.status == "profile_ready"
+        assert "汽车零部件制造" in result.profile.main_business
+        assert "用户上传，尚未公开核实" in result.profile.main_business
+        assert len(result.sources) == 2
+
+
+def test_known_business_survives_an_undisclosed_other_field(env):
+    from app.schemas.lite import PublicSource
+    svc, _, _, _ = env
+    name = "禾岸实业有限公司"
+    values = [PublicSource.model_validate(source("https://example.com/a",
+        name + "主营机械设备制造，员工人数尚未披露。"))]
+    profile = svc._profile(name, values, "")
+    assert "机械设备制造" in profile.main_business
+    assert profile.scale == svc.UNKNOWN
+
+
+def test_current_event_survives_old_founding_year(env, monkeypatch):
+    svc, _, engine, _ = env
+    monkeypatch.setattr(svc, "now", lambda: datetime(2026, 10, 27, tzinfo=timezone.utc))
+    name = "远洲工业有限公司"
+    monkeypatch.setattr(svc, "research_company", lambda _: [
+        source("https://example.com/a", name + "成立于2010年，2026年发布新一代机械设备产品。"),
+        source("https://example.org/b", name + "总部位于武汉，拥有员工350人，主营工业制造。"),
+    ])
+    with Session(engine) as db:
+        result = svc.research(db, "u1", name)
+        assert "2026年发布" in result.profile.recent_developments
+
+
+def test_existing_public_cache_is_revalidated_before_profile(env):
+    import json
+    svc, model, engine, calls = env
+    name = "明川咨询有限公司"
+    stamp = svc.now()
+    old_sources = [
+        source("https://example.com/a", name + "的母公司主营高端制造设备，拥有员工8000人，总部位于深圳。"),
+        source("https://example.org/b", name + "成立于2018年，拥有多项企业奖项。"),
+    ]
+    with Session(engine) as db:
+        db.add(model.LitePublicCache(company_key=svc.company_key(name), company_name=name,
+            state="ready", sources_json=json.dumps(old_sources, ensure_ascii=False),
+            warnings_json="[]", expires_at=stamp + timedelta(days=6)))
+        db.commit()
+        result = svc.research(db, "u1", name)
+        assert result.cache_hit and calls == []
+        assert result.status == "insufficient"
+        assert result.profile.main_business == svc.UNKNOWN
+
+
+@pytest.mark.parametrize("business", ["竞争对手数据分析软件", "母公司财务共享服务"])
+def test_relationship_word_as_business_object_is_still_evidence(env, business):
+    svc, _, _, _ = env
+    name = "杉岳咨询有限公司"
+    statement = f"主营{business}，总部位于合肥。"
+    accepted = svc._valid_sources(name, [source("https://example.com/a", name + statement)])
+    assert len(accepted) == 1
+    assert business in svc._profile(name, accepted, "").main_business
+    assert business in svc._profile(name, [], statement).main_business

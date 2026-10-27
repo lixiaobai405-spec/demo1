@@ -11,10 +11,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.models.lite import LiteAssessment, LitePublicCache
 from app.schemas.lite import LiteProfile, LiteRecommendation, LiteDirection, LiteResult, PublicSource
-from app.services.public_research import research_company, normalized_name, canonical_url, evidence_excerpt, duplicates_content
+from app.services.public_research import research_company, normalized_name, canonical_url, evidence_excerpt, duplicates_content, has_other_subject
 from app.services.llm_client import LLMClient
 
-VERSION = "lite-1.0-extractive"
+VERSION = "lite-1.1-extractive"
 UNKNOWN = "公开信息不足，待补充确认"
 
 def now():
@@ -103,23 +103,32 @@ def _profile(name: str, sources: list[PublicSource], upload: str) -> LiteProfile
     sentences = []
     for index, item in enumerate(sources, 1):
         sentences.extend((s, f"公开来源[{index}]") for s in _sentences(item.excerpt))
-    sentences.extend((s, "用户上传，尚未公开核实") for s in _sentences(upload))
+    sentences.extend((s, "用户上传，尚未公开核实") for s in _sentences(upload) if not has_other_subject(s, name))
     def pick(pattern):
         # Prefer statements naming this legal entity over group/subsidiary prose.
         ranked = sorted(sentences, key=lambda item: (normalized_name(name) in normalized_name(item[0]), "主营" in item[0]), reverse=True)
         for sentence, origin in ranked:
             # A legal name containing "科技" or "服务" does not prove an industry/business fact.
             fact_text = normalized_name(sentence).replace(normalized_name(name), "")
-            if re.search(pattern, fact_text, re.I):
-                return sentence[:300] + "（" + origin + "）"
+            # Unknown details in one clause must not erase known facts in another.
+            for clause in re.split(r"[，,；;]", fact_text):
+                if re.search(pattern, clause, re.I) and not re.search(r"尚未|暂未|未披露|未公开|暂无|未知|不详|不明确|待核实|待确认|有待|尚待|未提供|未明确", clause):
+                    return sentence[:300] + "（" + origin + "）"
         return UNKNOWN
     recent = UNKNOWN
     for sentence, origin in sentences:
-        years = [int(year) for year in re.findall(r"(?<!\d)(20\d{2})(?!\d)", sentence)]
-        if re.search(r"发布|推出|新增|近期|最近", sentence):
-            if years and max(years) < now().year - 1:
+        for clause in re.split(r"[，,；;]", sentence):
+            event = re.search(r"发布|推出|新增|近期|最近", clause)
+            if not event:
+                continue
+            # A later archive/edit date belongs to that clause, not to the launch.
+            before_event = re.findall(r"(?<!\d)(20\d{2})(?!\d)", clause[:event.start()])
+            years = before_event or re.findall(r"(?<!\d)(20\d{2})(?!\d)", clause)
+            if years and int(years[-1]) < now().year - 1:
                 continue
             recent = sentence[:300] + "（" + origin + ("；发布时间待核实" if not years else "") + "）"
+            break
+        if recent != UNKNOWN:
             break
     values = {
         "industry": pick(r"行业|产业|制造|互联网|软件|科技|金融|零售|医疗|物流|能源|信息技术|智能语音|人工智能"),

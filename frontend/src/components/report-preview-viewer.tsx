@@ -9,6 +9,7 @@ import { isPaymentRequired } from "@/lib/payment-entitlement";
 import type { AssessmentDetailResponse, ReportDocumentResponse } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 
 export function ReportPreviewViewer({ assessmentId }: { assessmentId: string }) {
@@ -148,6 +149,7 @@ export function ReportPreviewViewer({ assessmentId }: { assessmentId: string }) 
             <button type="button" onClick={handleGenerateReport} disabled={!detail.progress.ready_for_report || isGenerating} className="btn-primary">
               {isGenerating ? "正在生成报告..." : existingReport ? "重新生成报告" : "生成报告"}
             </button>
+            {isGenerating ? <GenerationWaitHint label="正在生成报告" /> : null}
 
             {existingReport ? (
               <Link href={`/reports/${existingReport.report_id}`} className="btn-secondary" target="_blank" rel="noopener noreferrer">查看已有报告</Link>

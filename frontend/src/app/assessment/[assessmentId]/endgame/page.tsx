@@ -11,6 +11,7 @@ import { EndgamePanel } from "@/components/endgame-panel";
 import { EndgameEditor } from "@/components/endgame-editor";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 import { SyncFeedbackPanel } from "@/components/sync-feedback-panel";
+import { GenerationMetadata } from "@/components/generation-metadata";
 import { toast } from "@/hooks/use-toast";
 import { formatMutationError } from "@/lib/api";
 import { isPaymentRequired } from "@/lib/payment-entitlement";
@@ -131,6 +132,10 @@ export default function EndgamePage({
           />
         ) : endgameData ? (
           <>
+            <GenerationMetadata
+              generationMode={endgameData.result.generation_mode}
+              generatedAt={endgameData.updated_at ?? endgameData.created_at}
+            />
             <div className="flex items-center gap-3">
               <Button
                 variant={isEditing ? "default" : "outline"}

@@ -10,11 +10,13 @@ import {
   useUpdateCompetitiveness,
 } from "@/hooks";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CompetitivenessEditor } from "@/components/competitiveness-editor";
 import { CompetitivenessPanel } from "@/components/competitiveness-panel";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 import { SyncFeedbackPanel } from "@/components/sync-feedback-panel";
+import { GenerationMetadata } from "@/components/generation-metadata";
 import { toast } from "@/hooks/use-toast";
 import { formatMutationError } from "@/lib/api";
 import { isPaymentRequired } from "@/lib/payment-entitlement";
@@ -151,6 +153,10 @@ export function CompetitivenessPageContent({
           />
         ) : competitiveness ? (
           <>
+            <GenerationMetadata
+              generationMode={competitiveness.result.generation_mode}
+              generatedAt={competitiveness.updated_at ?? competitiveness.created_at}
+            />
             <div className="flex items-center gap-3">
               <Button
                 variant={isEditing ? "default" : "outline"}
@@ -199,6 +205,7 @@ export function CompetitivenessPageContent({
                     ? "生成中..."
                     : "生成商业终局设计"}
                 </Button>
+                {generateEndgame.isPending ? <GenerationWaitHint label="正在生成商业终局设计" /> : null}
               </div>
             </section>
           </>

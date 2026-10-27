@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { toast } from "@/hooks/use-toast";
 import {
   downloadReportExport,
@@ -121,6 +122,7 @@ export function ReportExportActions({
           </Button>
         </>
       )}
+      {isGenerating ? <GenerationWaitHint label="正在生成报告" /> : null}
     </div>
   );
 }

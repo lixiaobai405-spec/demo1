@@ -463,6 +463,8 @@ export type DirectionExpansionByElement = {
 export type DirectionExpansionResult = {
   generation_mode: "rule_based" | "llm";
   llm_status: "pending" | "completed" | "failed";
+  created_at?: string | null;
+  updated_at?: string | null;
   elements: DirectionExpansionByElement[];
   total_suggestions: number;
 };

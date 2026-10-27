@@ -10,6 +10,7 @@ import { DirectionExpansionPanel } from "@/components/direction-expansion-panel"
 import { EndgamePanel } from "@/components/endgame-panel";
 import { FollowUpDashboard } from "@/components/follow-up-dashboard";
 import { ProgressStepper } from "@/components/progress-stepper";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import { PushPanel } from "@/components/push-panel";
 import { ScenarioRecommendationsPanel } from "@/components/scenario-recommendations-panel";
 import {
@@ -528,6 +529,9 @@ export function AssessmentWorkbench({
               <ActionBtn onClick={handleGenerateEndgame} disabled={!assessment || !progress.has_canvas || isGeneratingEndgame} color="accent" loading={isGeneratingEndgame} hasResult={!!endgameData} label="商业终局设计" />
               {/* 课后30天跟进暂时隐藏 <ActionBtn onClick={handleLoadFollowUp} disabled={!assessment || isLoadingFollowUp} color="success" loading={isLoadingFollowUp} hasResult={!!followUpPlan} label="课后 30 天跟进" /> */}
             </div>
+            {isGeneratingProfile || isGeneratingCanvas || isGeneratingBreakthrough || isGeneratingDirections || isGeneratingScenarios || isGeneratingCompetitiveness || isGeneratingEndgame ? (
+              <GenerationWaitHint />
+            ) : null}
             <p className="mt-4 text-sm leading-7 text-warm-muted">
               刷新页面后会自动从后端恢复当前 Assessment 状态。重新生成上游模块时，下游结果会自动失效并需要重新生成。
             </p>

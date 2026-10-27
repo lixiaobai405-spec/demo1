@@ -14,6 +14,7 @@ import {
 import type { ReportDocumentResponse } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { GenerationMetadata } from "@/components/generation-metadata";
 
 function ReportSkeleton() {
   return (
@@ -204,6 +205,9 @@ export function ReportDocumentViewer({ reportId }: { reportId: string }) {
         <div className="card-inset">
           <p className="section-label">生成信息</p>
           <h2 className="section-heading">生成元信息</h2>
+          <div className="mt-4">
+            <GenerationMetadata generationMode={report.generation_mode} generatedAt={report.updated_at ?? report.created_at} />
+          </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <span className="badge badge-accent">generation_mode: {report.generation_mode}</span>
             <span className={`badge ${report.used_llm ? "badge-success" : "badge-muted"}`}>

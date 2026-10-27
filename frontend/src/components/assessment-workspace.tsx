@@ -11,6 +11,7 @@ import { IntakeImportSection } from "@/components/intake-import-section";
 import { AssessmentSkeleton } from "@/components/assessment-skeleton";
 import { PaymentUnlockPanel } from "@/components/payment-unlock-panel";
 import { Button } from "@/components/ui/button";
+import { GenerationWaitHint } from "@/components/generation-wait-hint";
 import {
   Dialog,
   DialogContent,
@@ -72,7 +73,7 @@ function withSlowHint<T>(
   const timer = setTimeout(() => {
     showToast({
       title: "请稍候",
-      description: `${title}，正在进行 AI 分析...`,
+      description: `${title}，正在进行 AI 分析。预计 1–2 分钟，实际时间取决于资料量与网络状况，请稍候。`,
     });
   }, SLOW_HINT_DELAY_MS);
 
@@ -754,6 +755,9 @@ export function AssessmentWorkspace({
                 <ActionBtn key={key} {...actionProps} />
               ))}
             </div>
+            {workflowModules.some((module) => module.loading) ? (
+              <GenerationWaitHint label={generateProfile.isPending ? "正在生成企业画像" : "正在生成分析结果"} />
+            ) : null}
             <p className="mt-4 text-sm leading-7 text-muted-foreground">
               刷新页面后会自动从后端恢复当前 Assessment 状态。重新生成上游模块时，
               下游结果会自动失效并需要重新生成。
